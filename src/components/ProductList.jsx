@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import DeleteConfirmModal from './DeleteConfirmModal';
 
 const ProductList = ({ products }) => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
@@ -15,8 +17,7 @@ const ProductList = ({ products }) => {
   const currentProducts = products.slice(startIndex, endIndex);
 
   const handleEdit = (product) => {
-    console.log('Edit product:', product);
-    // TODO: 수정 로직 구현
+    navigate(`/products/edit/${product.id}`);
   };
 
   const handleDeleteClick = (product) => {

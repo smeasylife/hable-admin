@@ -1,12 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProductList from '../components/ProductList';
 import { mockProducts } from '../data/mockProducts';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 const Products = () => {
+  const navigate = useNavigate();
+  
   const handleAddProduct = () => {
-    console.log('Add new product');
-    // TODO: 상품 추가 로직 구현
+    navigate('/products/add');
   };
 
   return (

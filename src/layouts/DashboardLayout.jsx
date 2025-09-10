@@ -6,6 +6,7 @@ import Sidebar from '../components/Sidebar';
 
 const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { user, logout } = useAuth();
 
   return (
@@ -21,11 +22,13 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <Sidebar 
         sidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen} 
+        setSidebarOpen={setSidebarOpen}
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
       />
 
       {/* Main content */}
-      <div className="lg:pl-72">
+      <div className={sidebarCollapsed ? "lg:pl-20" : "lg:pl-72"}>
         {/* Top header */}
         <div className="sticky top-0 z-10 bg-white shadow-sm border-b border-gray-200">
           <div className="flex h-16 items-center gap-x-4 px-4 sm:gap-x-6 sm:px-6 lg:px-8">
@@ -36,6 +39,15 @@ const DashboardLayout = () => {
               onClick={() => setSidebarOpen(true)}
             >
               <Bars3Icon className="h-6 w-6" />
+            </button>
+
+            {/* Desktop sidebar toggle */}
+            <button
+              type="button"
+              className="hidden lg:block -m-2.5 p-2.5 text-gray-700 hover:text-gray-900"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            >
+              <Bars3Icon className="h-5 w-5" />
             </button>
 
             {/* Separator */}

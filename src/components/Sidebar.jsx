@@ -15,20 +15,22 @@ const navigation = [
   { name: 'Q&A 관리', href: '/qna', icon: QuestionMarkCircleIcon },
 ];
 
-const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
+const Sidebar = ({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed }) => {
   const location = useLocation();
 
   return (
     <>
       {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <div className={`hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:w-20' : 'lg:w-72'}`}>
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-6 pb-4">
           {/* Logo */}
           <div className="flex h-16 shrink-0 items-center">
             <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">H</span>
             </div>
-            <span className="ml-3 text-xl font-semibold text-gray-900">Hable</span>
+            {!sidebarCollapsed && (
+              <span className="ml-3 text-xl font-semibold text-gray-900">Hable</span>
+            )}
           </div>
 
           {/* Navigation */}
@@ -40,11 +42,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                     <li key={item.name}>
                       <Link
                         to={item.href}
-                        className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors ${
+                        className={`group flex rounded-md p-2 text-sm leading-6 font-semibold transition-colors ${
+                          sidebarCollapsed ? 'justify-center' : 'gap-x-3'
+                        } ${
                           location.pathname === item.href
                             ? 'bg-primary-600 text-white'
                             : 'text-gray-700 hover:text-primary-600 hover:bg-gray-50'
                         }`}
+                        title={sidebarCollapsed ? item.name : ''}
                       >
                         <item.icon
                           className={`h-6 w-6 shrink-0 ${
@@ -53,7 +58,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                               : 'text-gray-400 group-hover:text-primary-600'
                           }`}
                         />
-                        {item.name}
+                        {!sidebarCollapsed && item.name}
                       </Link>
                     </li>
                   ))}
