@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { PhotoIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const ImageUpload = ({ images = [], onImagesChange, maxImages = 10 }) => {
   const [dragOver, setDragOver] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const handleFileSelect = (files) => {
     const newFiles = Array.from(files);
@@ -66,6 +67,24 @@ const ImageUpload = ({ images = [], onImagesChange, maxImages = 10 }) => {
     onImagesChange(newImages);
   };
 
+  const handleImageDragStart = (e, index) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleImageDragOver = (e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleImageDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== dropIndex) {
+      moveImage(draggedIndex, dropIndex);
+    }
+    setDraggedIndex(null);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -113,18 +132,26 @@ const ImageUpload = ({ images = [], onImagesChange, maxImages = 10 }) => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {images.map((image, index) => (
             <div key={image.id} className="relative group">
-              <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+              <div
+                draggable
+                onDragStart={(e) => handleImageDragStart(e, index)}
+                onDragOver={(e) => handleImageDragOver(e, index)}
+                onDrop={(e) => handleImageDrop(e, index)}
+                className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-move transition-all ${
+                  draggedIndex === index ? 'opacity-50 scale-95' : ''
+                }`}
+              >
                 <img
                   src={image.preview}
                   alt={`Preview ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none"
                 />
               </div>
-              
+
               {/* Remove button */}
               <button
                 onClick={() => removeImage(image.id)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600 z-10"
               >
                 <XMarkIcon className="h-4 w-4" />
               </button>
@@ -142,29 +169,12 @@ const ImageUpload = ({ images = [], onImagesChange, maxImages = 10 }) => {
               </p>
             </div>
           ))}
-
-          {/* Add more button */}
-          {images.length < maxImages && (
-            <div className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center hover:border-gray-400 transition-colors">
-              <label className="cursor-pointer flex flex-col items-center text-gray-400 hover:text-gray-500">
-                <PlusIcon className="h-8 w-8" />
-                <span className="text-xs mt-1">추가</span>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileInput}
-                  className="hidden"
-                />
-              </label>
-            </div>
-          )}
         </div>
       )}
 
       {images.length > 0 && (
         <p className="text-xs text-gray-500">
-          * 첫 번째 이미지가 메인 이미지로 설정됩니다. 순서를 변경하려면 이미지를 드래그하세요.
+          * 첫 번째 이미지가 메인 이미지로 설정됩니다. 이미지를 드래그하여 순서를 변경할 수 있습니다.
         </p>
       )}
     </div>

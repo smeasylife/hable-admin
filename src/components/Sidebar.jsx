@@ -6,10 +6,14 @@ import {
   CubeIcon,
   ChatBubbleLeftRightIcon,
   QuestionMarkCircleIcon,
+  FolderIcon,
+  TicketIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: '대시보드', href: '/', icon: HomeIcon },
+  { name: '카테고리 관리', href: '/categories', icon: FolderIcon },
+  { name: '쿠폰 관리', href: '/coupons', icon: TicketIcon },
   { name: '상품 관리', href: '/products', icon: CubeIcon },
   { name: '리뷰 관리', href: '/reviews', icon: ChatBubbleLeftRightIcon },
   { name: 'Q&A 관리', href: '/qna', icon: QuestionMarkCircleIcon },

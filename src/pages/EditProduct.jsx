@@ -1,17 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import ImageUpload from '../components/ImageUpload';
 import * as Form from '@radix-ui/react-form';
+
+// 더미 카테고리 데이터
+const dummyCategories = [
+  {
+    id: 1,
+    name: '겨울',
+    parentId: null,
+    subCategories: [
+      {
+        id: 11,
+        name: '이불',
+        parentId: 1,
+        subCategories: []
+      },
+      {
+        id: 12,
+        name: '배게',
+        parentId: 1,
+        subCategories: []
+      },
+      {
+        id: 13,
+        name: '발매트',
+        parentId: 1,
+        subCategories: []
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: '봄/가을',
+    parentId: null,
+    subCategories: [
+      {
+        id: 21,
+        name: '이불',
+        parentId: 2,
+        subCategories: []
+      },
+      {
+        id: 22,
+        name: '배게',
+        parentId: 2,
+        subCategories: []
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: '여름',
+    parentId: null,
+    subCategories: [
+      {
+        id: 31,
+        name: '시원한 이불',
+        parentId: 3,
+        subCategories: []
+      },
+      {
+        id: 32,
+        name: '냉감 배게',
+        parentId: 3,
+        subCategories: []
+      }
+    ]
+  }
+];
 
 const EditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(dummyCategories);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState({});
   const [images, setImages] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    descriptions: ['', '', '', ''],
+    description: '',
     size: '',
     fabric: '',
     information: '',
@@ -31,12 +101,7 @@ const EditProduct = () => {
   const mockProductData = {
     id: 1,
     name: '프리미엄 코튼 침대 시트',
-    descriptions: [
-      '100% 순면 소재로 제작된 고급 침대 시트',
-      '부드럽고 통기성이 좋아 사계절 사용 가능',
-      '세탁 후에도 형태 변형이 적은 고품질 제품',
-      '다양한 색상으로 침실 분위기에 맞게 선택 가능'
-    ],
+    description: '100% 순면 소재로 제작된 고급 침대 시트입니다. 부드럽고 통기성이 좋아 사계절 사용 가능하며, 세탁 후에도 형태 변형이 적은 고품질 제품입니다. 다양한 색상으로 침실 분위기에 맞게 선택 가능합니다.',
     size: 'queen',
     fabric: '100% 순면 (Cotton)',
     information: '두께: 적당함 / 촉감: 부드러움 / 안감: 있음 / 신축성: 없음 / 세탁 방법: 단독 찬물 세탁 권장',
@@ -57,13 +122,13 @@ const EditProduct = () => {
         // TODO: Replace with actual API call
         // const response = await fetch(`/api/products/${id}`);
         // const productData = await response.json();
-        
+
         // For demo, use mock data for ID 1
         const productData = mockProductData;
         
         setFormData({
           name: productData.name,
-          descriptions: productData.descriptions,
+          description: productData.description,
           size: productData.size,
           fabric: productData.fabric,
           information: productData.information,
@@ -93,14 +158,59 @@ const EditProduct = () => {
     }));
   };
 
-  const handleDescriptionChange = (index, value) => {
-    const newDescriptions = [...formData.descriptions];
-    newDescriptions[index] = value;
-    setFormData(prev => ({
+  const toggleCategoryExpand = (categoryId) => {
+    setExpandedCategories(prev => ({
       ...prev,
-      descriptions: newDescriptions
+      [categoryId]: !prev[categoryId]
     }));
   };
+
+  const handleCategoryToggle = (categoryId) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+
+  const renderCategoryTree = (categoryList, level = 0) => {
+    if (!categoryList || categoryList.length === 0) return null;
+
+    return categoryList.map((category) => (
+      <div key={category.id} className={`${level > 0 ? 'ml-6' : ''}`}>
+        <div className="flex items-center gap-2 py-1.5">
+          {category.subCategories && category.subCategories.length > 0 && (
+            <button
+              type="button"
+              onClick={() => toggleCategoryExpand(category.id)}
+              className="p-0.5 hover:bg-gray-100 rounded transition-colors"
+            >
+              {expandedCategories[category.id] ? (
+                <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+              ) : (
+                <ChevronRightIcon className="h-4 w-4 text-gray-500" />
+              )}
+            </button>
+          )}
+          <label className="flex items-center gap-2 cursor-pointer flex-1">
+            <input
+              type="checkbox"
+              checked={selectedCategories.includes(category.id)}
+              onChange={() => handleCategoryToggle(category.id)}
+              className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+            />
+            <span className="text-sm text-gray-700">{category.name}</span>
+          </label>
+        </div>
+        {expandedCategories[category.id] && category.subCategories && category.subCategories.length > 0 && (
+          <div className="ml-4">
+            {renderCategoryTree(category.subCategories, level + 1)}
+          </div>
+        )}
+      </div>
+    ));
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -173,24 +283,21 @@ const EditProduct = () => {
             </Form.Message>
           </Form.Field>
 
-          {/* Product Descriptions */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              상품 설명 (최대 4개)
-            </label>
-            <div className="space-y-3">
-              {formData.descriptions.map((description, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  value={description}
-                  onChange={(e) => handleDescriptionChange(index, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
-                  placeholder={`상품 설명 ${index + 1}`}
-                />
-              ))}
-            </div>
-          </div>
+          {/* Product Description */}
+          <Form.Field name="description">
+            <Form.Label className="block text-sm font-medium text-gray-700 mb-2">
+              상품 설명
+            </Form.Label>
+            <Form.Control asChild>
+              <textarea
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                placeholder="상품 설명을 입력하세요"
+              />
+            </Form.Control>
+          </Form.Field>
 
           {/* Size Selection */}
           <Form.Field name="size">
@@ -272,6 +379,32 @@ const EditProduct = () => {
               />
             </Form.Control>
           </Form.Field>
+        </div>
+
+        {/* Categories Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 space-y-6">
+          <h2 className="text-lg font-semibold text-gray-900">카테고리</h2>
+          <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4">
+            {categories.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">
+                등록된 카테고리가 없습니다.
+                <button
+                  type="button"
+                  onClick={() => navigate('/categories')}
+                  className="ml-2 text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  카테고리 관리 →
+                </button>
+              </p>
+            ) : (
+              renderCategoryTree(categories)
+            )}
+          </div>
+          {selectedCategories.length > 0 && (
+            <p className="text-sm text-gray-600">
+              <span className="font-medium">{selectedCategories.length}</span>개의 카테고리가 선택되었습니다.
+            </p>
+          )}
         </div>
 
         {/* Pricing */}

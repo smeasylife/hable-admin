@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Categories from './pages/Categories';
+import Coupons from './pages/Coupons';
 import Products from './pages/Products';
 import AddProduct from './pages/AddProduct';
 import EditProduct from './pages/EditProduct';
@@ -20,6 +22,8 @@ function App() {
         </ProtectedRoute>
       }>
         <Route index element={<Dashboard />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="coupons" element={<Coupons />} />
         <Route path="products" element={<Products />} />
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/edit/:id" element={<EditProduct />} />
