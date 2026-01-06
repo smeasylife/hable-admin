@@ -8,6 +8,7 @@ import {
   QuestionMarkCircleIcon,
   FolderIcon,
   TicketIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -17,6 +18,7 @@ const navigation = [
   { name: '상품 관리', href: '/products', icon: CubeIcon },
   { name: '리뷰 관리', href: '/reviews', icon: ChatBubbleLeftRightIcon },
   { name: 'Q&A 관리', href: '/qna', icon: QuestionMarkCircleIcon },
+  { name: '회원 관리', href: '/members', icon: UserGroupIcon },
 ];
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen, sidebarCollapsed, setSidebarCollapsed }) => {

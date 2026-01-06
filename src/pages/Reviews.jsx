@@ -3,6 +3,7 @@ import { mockReviews } from '../data/mockReviews';
 import { mockProducts } from '../data/mockProducts';
 import { StarIcon, ChevronLeftIcon, ChevronRightIcon, PencilIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { reviewApi } from '../services/reviewApi';
 
 const Reviews = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,28 +48,16 @@ const Reviews = () => {
 
   const handleReplySubmit = async (reviewId) => {
     if (!replyContent.trim()) return;
-    
+
     try {
-      // TODO: 실제 API 호출로 교체
-      const response = await fetch('/api/reviews/reply', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          reviewId,
-          content: replyContent
-        })
-      });
-      
-      if (response.ok) {
-        console.log('Reply saved successfully');
-        // TODO: 상태 업데이트 로직 추가
-        setExpandedReview(null);
-        setReplyContent('');
-      }
+      await reviewApi.updateReviewComment(reviewId, replyContent);
+      alert('답변이 저장되었습니다.');
+      setExpandedReview(null);
+      setReplyContent('');
+      // TODO: 리뷰 데이터를 다시 가져오거나 상태를 업데이트하는 로직 추가
     } catch (error) {
       console.error('Failed to save reply:', error);
+      alert('답변 저장에 실패했습니다. 다시 시도해주세요.');
     }
   };
 

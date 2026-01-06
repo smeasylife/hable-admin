@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { mockQnA } from '../data/mockQnA';
 import { mockProducts } from '../data/mockProducts';
 import { ChevronLeftIcon, ChevronRightIcon, PencilIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { qnaApi } from '../services/qnaApi';
 
 const QnA = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,28 +47,16 @@ const QnA = () => {
 
   const handleAnswerSubmit = async (questionId) => {
     if (!answerContent.trim()) return;
-    
+
     try {
-      // TODO: 실제 API 호출로 교체
-      const response = await fetch('/api/qna/answer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          questionId,
-          content: answerContent
-        })
-      });
-      
-      if (response.ok) {
-        console.log('Answer saved successfully');
-        // TODO: 상태 업데이트 로직 추가
-        setExpandedQuestion(null);
-        setAnswerContent('');
-      }
+      await qnaApi.saveAnswer(questionId, answerContent);
+      alert('답변이 저장되었습니다.');
+      setExpandedQuestion(null);
+      setAnswerContent('');
+      // TODO: Q&A 데이터를 다시 가져오거나 상태를 업데이트하는 로직 추가
     } catch (error) {
       console.error('Failed to save answer:', error);
+      alert('답변 저장에 실패했습니다. 다시 시도해주세요.');
     }
   };
 

@@ -11,6 +11,7 @@ import AddProduct from './pages/AddProduct';
 import EditProduct from './pages/EditProduct';
 import Reviews from './pages/Reviews';
 import QnA from './pages/QnA';
+import Members from './pages/Members';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="products/edit/:id" element={<EditProduct />} />
         <Route path="reviews" element={<Reviews />} />
         <Route path="qna" element={<QnA />} />
+        <Route path="members" element={<Members />} />
       </Route>
     </Routes>
   );
